@@ -72,7 +72,7 @@ class ICUCHReader(Sequence):
         not_null_events = hypoxia_label.notnull()
 
         time = time[not_null_events]
-        vitals= parameters_readings[not_null_events]
+        vitals= vitals[not_null_events]
         hypoxia_label = hypoxia_label[not_null_events]
 
         return case_id, {
