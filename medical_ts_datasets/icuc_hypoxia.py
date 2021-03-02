@@ -70,7 +70,6 @@ class ICUCHReader(Sequence):
 
         # We convert from ns from admission to s from admission
         time =  (data.index.values- data.index.values[0])/np.timedelta64(1,"s").astype(np.int32)
-        breakpoint()
 
         parameters_readings = data[self.parameters]
         hypoxia_label = data['critical_events_PbtO2_2']
