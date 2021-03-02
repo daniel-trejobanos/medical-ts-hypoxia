@@ -9,7 +9,7 @@ builders = [
     'physionet2012',
     'physionet2019',
     'mimic3_mortality',
-    'mimic3_phenotyping'
+    'mimic3_phenotyping',
     'icuc_hypoxia'
 ]
 
