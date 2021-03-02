@@ -116,7 +116,7 @@ class ICUCHypoxia(MedicalTsDatasetBuilder):
             },
             default_target='critical_events_PbtO2_2',
             demographic_names=None,
-            vitals_names=ICUCHReader.parameters,
+            vitals_names=ICUCHReader.vital_features,
             lab_measurements_names=None,
             description=_DESCRIPTION,
             citation=_CITATION
