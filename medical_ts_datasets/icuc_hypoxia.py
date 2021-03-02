@@ -58,7 +58,7 @@ class ICUCHReader(Sequence):
 
 
         """
-        case_id = str(self.instances.iloc[index,self.instances.columns.get_loc('CaseID')])
+        case_id = str(self.samples.iloc[index,self.instances.columns.get_loc('CaseID')])
         data_file = join(self.data_paths, case_id, "processed_case.parquet")
 
         data = pq.read_table(data_file).to_pandas()
