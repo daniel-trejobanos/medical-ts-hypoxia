@@ -76,10 +76,10 @@ class ICUCHReader(Sequence):
         hypoxia_label = hypoxia_label[not_null_events]
 
         return case_id, {
-            'demographics': None,
+            # 'demographics': None,
             'time': time.astype(self.data_dtype),
             'vitals': vitals.values.astype(self.data_dtype),
-            'lab_measurements': None,
+            # 'lab_measurements': None,
             'targets': {
                 'critical_events_PbtO2_2': hypoxia_label.values.astype(np.int32)[:, np.newaxis]
             },
@@ -115,9 +115,7 @@ class ICUCHypoxia(MedicalTsDatasetBuilder):
                         shape=(None, 1), dtype=tf.int32)
             },
             default_target='critical_events_PbtO2_2',
-            demographic_names=None,
             vitals_names=ICUCHReader.vital_features,
-            lab_measurements_names=None,
             description=_DESCRIPTION,
             citation=_CITATION
         )
