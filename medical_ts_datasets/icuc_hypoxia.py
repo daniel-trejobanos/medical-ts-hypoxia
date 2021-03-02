@@ -24,11 +24,11 @@ class ICUCHReader(Sequence):
     """
     # TODO: read this from config file instead
 
-    blacklist = None
-    parameters = ['MAP', 'ICP_1', 'ICP_2', 'PbtO2_1',
+    vital_features = ['MAP', 'ICP_1', 'ICP_2', 'PbtO2_1',
        'PbtO2_2', 'CPP_1', 'CPP_2']
+    ts_features = vital_features
 
-    def __init__(self, data_dir, listfile):
+    def __init__(self, data_path, listfile):
         """
         Class constructor
 
@@ -39,16 +39,11 @@ class ICUCHReader(Sequence):
 
         """
 
-        self.dataset_dir = data_dir
+        self.data_paths = data_path
         #here you read the file catalog
-        self.instances = pd.read_csv(listfile)
-
-        if self.blacklist is not None:
-            # remove instances which are on the blacklist
-            self.instances = self.instances[
-                ~self.instances['Caseid'].isin(blacklist)
-            ]
-
+        self.samples = pd.read_csv(listfile)
+        self.label_dtype = np.float32
+        self.data_dtype = np.float32
 
     def __getitem__(self, index):
         """
@@ -64,25 +59,27 @@ class ICUCHReader(Sequence):
 
         """
         case_id = str(self.instances.iloc[index,self.instances.columns.get_loc('CaseID')])
-        data_file = join(self.dataset_dir, case_id, "processed_case.parquet")
+        data_file = join(self.data_paths, case_id, "processed_case.parquet")
 
         data = pq.read_table(data_file).to_pandas()
 
         # We convert from ns from admission to s from admission
         time =  (data.index.values- data.index.values[0])/np.timedelta64(1,"s").astype(np.int32)
 
-        parameters_readings = data[self.parameters]
+        vitals = data[self.parameters]
         hypoxia_label = data['critical_events_PbtO2_2']
 
         not_null_events = hypoxia_label.notnull()
 
         time = time[not_null_events]
-        parameters_readings= parameters_readings[not_null_events]
+        vitals= parameters_readings[not_null_events]
         hypoxia_label = hypoxia_label[not_null_events]
 
         return case_id, {
-            'time': time.astype(np.float32),
-            'vitals': parameters_readings.values.astype(np.float32),
+            'demographics': None,
+            'time': time.astype(self.data_dtype),
+            'vitals': vitals.values.astype(self.data_dtype),
+            'lab_measurements': None,
             'targets': {
                 'critical_events_PbtO2_2': hypoxia_label.values.astype(np.int32)[:, np.newaxis]
             },
@@ -118,7 +115,9 @@ class ICUCHypoxia(MedicalTsDatasetBuilder):
                         shape=(None, 1), dtype=tf.int32)
             },
             default_target='critical_events_PbtO2_2',
+            demographic_names=None,
             vitals_names=ICUCHReader.parameters,
+            lab_measurements_names=None,
             description=_DESCRIPTION,
             citation=_CITATION
         )
