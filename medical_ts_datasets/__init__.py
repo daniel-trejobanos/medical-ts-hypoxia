@@ -10,6 +10,7 @@ builders = [
     'physionet2019',
     'mimic3_mortality',
     'mimic3_phenotyping'
+    'icuc_hypoxia'
 ]
 
 __version__ = '0.1.0'
