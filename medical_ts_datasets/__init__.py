@@ -4,6 +4,7 @@ import medical_ts_datasets.physionet_2012
 import medical_ts_datasets.physionet_2019
 import medical_ts_datasets.mimic_3_phenotyping
 import medical_ts_datasets.mimic_3_mortality
+import medical_ts_datasets.icuc_hypoxia
 
 builders = [
     'physionet2012',
