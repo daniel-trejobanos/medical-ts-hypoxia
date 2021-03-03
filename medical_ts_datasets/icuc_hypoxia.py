@@ -67,8 +67,18 @@ class ICUCHReader(Sequence):
         time =  (data.index.values- data.index.values[0])/np.timedelta64(1,"s").astype(np.int32)
 
         vitals = data[self.vital_features]
-        hypoxia_label = data['critical_events_PbtO2_2']
 
+        target_sensors = {"critical_events_PbtO2_1", "critical_events_PbtO2_2"}
+        if 'critical_events_PbtO2_1' in data.columns:
+            hypoxia_label_1 = data['critical_events_PbtO2_1']
+        else:
+            hypoxia_label_1 = False
+        if 'critical_events_PbtO2_2' in data.columns:
+            hypoxia_label_2 = data['critical_events_PbtO2_2']
+        else:
+            hypoxia_label_2 = False
+
+        hypoxia_label = hypoxia_label_1 | hypoxia_label_2
         not_null_events = hypoxia_label.notnull()
 
         time = time[not_null_events]
@@ -81,7 +91,7 @@ class ICUCHReader(Sequence):
             'vitals': vitals.values.astype(self.data_dtype),
             # 'lab_measurements': None,
             'targets': {
-                'critical_events_PbtO2_2': hypoxia_label.values.astype(np.int32)[:, np.newaxis]
+                'critical_events': hypoxia_label.values.astype(np.int32)[:, np.newaxis]
             },
             'metadata': {
                 'patient_id': case_id
@@ -104,17 +114,17 @@ class ICUCHypoxia(MedicalTsDatasetBuilder):
     has_vitals = True
     has_lab_measurements = False
     has_interventions = False
-    default_target = 'critical_events_PbtO2_2'
+    default_target = 'critical_events'
 
     def _info(self):
         return MedicalTsDatasetInfo(
             builder=self,
             targets={
-               'critical_events_PbtO2_2':
+               'critical_events':
                     tfds.features.Tensor(
                         shape=(None, 1), dtype=tf.int32)
             },
-            default_target='critical_events_PbtO2_2',
+            default_target='critical_events',
             vitals_names=ICUCHReader.vital_features,
             description=_DESCRIPTION,
             citation=_CITATION
