@@ -137,7 +137,6 @@ class MedicalTsDatasetBuilder(tfds.core.GeneratorBasedBuilder):
                 length = tf.shape(time)[0]
                 return {
                     'combined': (
-                        demographics,
                         time,
                         time_series,
                         measurements,
@@ -147,7 +146,7 @@ class MedicalTsDatasetBuilder(tfds.core.GeneratorBasedBuilder):
                 }
             else:
                 return {
-                    'combined': (demographics, time, time_series),
+                    'combined': (time, time_series),
                     'target': instance['targets'][self.default_target]
                 }
 
