@@ -22,8 +22,9 @@ class ICUCHReader(Sequence):
     """
     Reader class used to load a data set to the medical ts interface
     """
-    # TODO: read this from config file instead
 
+    # FIXME quick hack, add constant dummy feature so things work well.
+    static_features = ['Gender']
     vital_features = ['MAP', 'ICP_1', 'ICP_2', 'PbtO2_1',
        'PbtO2_2', 'CPP_1', 'CPP_2']
     ts_features = vital_features
@@ -85,8 +86,10 @@ class ICUCHReader(Sequence):
         vitals= vitals[not_null_events]
         hypoxia_label = hypoxia_label[not_null_events]
 
+        # FIXME quick hack to get things running
+        demographics = np.random.randint(2, size=1)[0]
         return case_id, {
-            # 'demographics': None,
+            'demographics': np.float32(demographics),
             'time': time.astype(self.data_dtype),
             'vitals': vitals.values.astype(self.data_dtype),
             # 'lab_measurements': None,
@@ -125,6 +128,7 @@ class ICUCHypoxia(MedicalTsDatasetBuilder):
                         shape=(None, 1), dtype=tf.int32)
             },
             default_target='critical_events',
+            demographics_names=ICUCHReader.static_features,
             vitals_names=ICUCHReader.vital_features,
             description=_DESCRIPTION,
             citation=_CITATION
