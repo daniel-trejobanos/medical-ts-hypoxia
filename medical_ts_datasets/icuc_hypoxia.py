@@ -87,7 +87,7 @@ class ICUCHReader(Sequence):
         hypoxia_label = hypoxia_label[not_null_events]
 
         # FIXME quick hack to get things running
-        demographics = np.random.randint(2, size=1)[0]
+        demographics = np.random.randint(2, size=1)
         return case_id, {
             'demographics': np.float32(demographics),
             'time': time.astype(self.data_dtype),
